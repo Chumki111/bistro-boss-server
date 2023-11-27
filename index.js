@@ -54,7 +54,8 @@ async function run() {
 
         // collection
         const usersCollection = client.db('finalEffortDB').collection('users')
-
+        const donationsCollection = client.db('finalEffortDB').collection('donations')
+    
         // auth related api
         app.post('/jwt', async (req, res) => {
             const user = req.body
@@ -105,6 +106,12 @@ async function run() {
                 options
             )
             res.send(result)
+        })
+
+        app.post('/donations',async(req,res) =>{
+            const donation= req.body;
+            const result = await donationsCollection.insertOne(donation);
+            res.send(result);
         })
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
