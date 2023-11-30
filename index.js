@@ -56,7 +56,7 @@ async function run() {
         const usersCollection = client.db('finalEffortDB').collection('users');
         const blogCollection = client.db('finalEffortDB').collection('blogs');
         const donationsCollection = client.db('finalEffortDB').collection('donations')
-    
+
         // auth related api
         app.post('/jwt', async (req, res) => {
             const user = req.body
@@ -109,72 +109,72 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/users/:email',async(req,res) =>{
-            const email= req.params.email;
-            const result = await usersCollection.findOne({email})
+        app.get('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            const result = await usersCollection.findOne({ email })
             res.send(result)
         })
-        app.get('/users',async(req,res) =>{
-            
+        app.get('/users', async (req, res) => {
+
             const result = await usersCollection.find().toArray()
             res.send(result)
         })
 
-        app.post('/donations',async(req,res) =>{
-            const donation= req.body;
+        app.post('/donations', async (req, res) => {
+            const donation = req.body;
             const result = await donationsCollection.insertOne(donation);
             res.send(result);
         })
 
-        app.get('/donation/:id',async(req,res) =>{
+        app.get('/donation/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const result = await donationsCollection.findOne(query);
             res.send(result)
         })
-        app.get('/donations/:email',async(req,res) =>{
+        app.get('/donations/:email', async (req, res) => {
             const email = req.params.email;
-            const query = {equester_email: email}
+            const query = { equester_email: email }
             const result = await donationsCollection.find(query).toArray();
             res.send(result)
         })
-      
-        app.get('/donations',async(req,res) =>{
-            
+
+        app.get('/donations', async (req, res) => {
+
             const result = await donationsCollection.find().toArray()
             res.send(result)
         })
 
-        app.post('/blogs',async(req,res) =>{
-            const blog= req.body;
+        app.post('/blogs', async (req, res) => {
+            const blog = req.body;
             const result = await blogCollection.insertOne(blog);
             res.send(result);
         })
-        app.get('/blogs',async(req,res) =>{
-            
+        app.get('/blogs', async (req, res) => {
+
             const result = await blogCollection.find().toArray()
             res.send(result)
         })
 
-
-
-           // stats or analytics
-    app.get('/admin-stats',async (req, res) => {
-        const users = await usersCollection.estimatedDocumentCount();
-        const donations = await donationsCollection.estimatedDocumentCount();
-        const orders = await blogCollection.estimatedDocumentCount();
-        console.log(users);
-  
-        // this is not the best way
-        // const payments = await paymentCollection.find().toArray();
-        // const revenue = payments.reduce((total, payment) => total + payment.price, 0);
-  res.send({
-          users,
-          donations,
-          orders
-          
+        app.delete('/blogs/:id', verifyToken, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await blogCollection.deleteOne(query);
+            res.send(result);
         })
-      })
+
+        // stats or analytics
+        app.get('/admin-stats', async (req, res) => {
+            const users = await usersCollection.estimatedDocumentCount();
+            const donations = await donationsCollection.estimatedDocumentCount();
+            const orders = await blogCollection.estimatedDocumentCount();
+            res.send({
+                users,
+                donations,
+                orders
+
+            })
+        })
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
